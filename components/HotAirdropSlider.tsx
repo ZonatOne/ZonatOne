@@ -1,8 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, ChevronRight, Gem } from 'lucide-react';
+import { Gem } from 'lucide-react';
 import Link from 'next/link';
 
 const HOT_AIRDROPS = [
@@ -14,7 +14,7 @@ const HOT_AIRDROPS = [
         platform: "Mode Network Airdrop",
         desc: "Mode adalah Layer 2 dengan focus DeFi. Early users berpotensi mendapat MODE token airdrop.",
         bg: "from-blue-600/20 to-purple-600/20",
-        image: "linear-gradient(to right, #4f46e5, #9333ea)" // Placeholder for actual image
+        image: "linear-gradient(to right, #4f46e5, #9333ea)"
     },
     {
         id: 2,
@@ -31,13 +31,20 @@ const HOT_AIRDROPS = [
 export function HotAirdropSlider() {
     const [current, setCurrent] = useState(0);
 
-    const next = () => setCurrent((prev) => (prev + 1) % HOT_AIRDROPS.length);
-    const prev = () => setCurrent((prev) => (prev - 1 + HOT_AIRDROPS.length) % HOT_AIRDROPS.length);
+    useEffect(() => {
+        const timer = setInterval(() => {
+            setCurrent((prev) => (prev + 1) % HOT_AIRDROPS.length);
+        }, 3000);
+        return () => clearInterval(timer);
+    }, []);
 
     return (
-        <div className="w-full bg-[#0F111A] border border-blue-900/30 rounded-3xl p-6 relative overflow-hidden group">
+        <div className="w-full bg-[#0F111A]/0 relative overflow-hidden group">
+            {/* Background Glow */}
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-purple-500/5 rounded-3xl blur-xl -z-10" />
+
             {/* Header */}
-            <div className="flex justify-between items-center mb-6">
+            <div className="flex justify-between items-center mb-6 px-4">
                 <div className="flex items-center gap-2">
                     <Gem className="text-white" size={20} />
                     <span className="font-bold text-lg text-white">Star Kampanye</span>
@@ -49,65 +56,82 @@ export function HotAirdropSlider() {
             </div>
 
             {/* Slide Content */}
-            <div className="relative h-[300px] mb-6 rounded-2xl overflow-hidden bg-black/40">
+            <div className="relative h-[300px] mb-6 rounded-3xl overflow-hidden shadow-2xl shadow-purple-500/10">
                 <AnimatePresence mode="wait">
                     <motion.div
                         key={current}
-                        initial={{ opacity: 0, x: 20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: -20 }}
-                        transition={{ duration: 0.3 }}
-                        className="absolute inset-0 p-6 flex flex-col justify-center items-center text-center"
+                        initial={{ opacity: 0, scale: 1.05 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.8, ease: "easeInOut" }}
+                        className="absolute inset-0 p-8 flex flex-col justify-center items-center text-center"
                         style={{ background: HOT_AIRDROPS[current].image }}
                     >
-                        <h3 className="text-yellow-300 font-bold text-xl mb-2 drop-shadow-md">{HOT_AIRDROPS[current].title}</h3>
-                        <p className="text-green-300 font-bold text-sm mb-4 drop-shadow-md">{HOT_AIRDROPS[current].subtitle}</p>
-                        <h1 className="text-5xl font-black text-white tracking-wider drop-shadow-xl stroke-black" style={{ WebkitTextStroke: "1px black" }}>
+                        <motion.h3
+                            initial={{ y: 20, opacity: 0 }}
+                            animate={{ y: 0, opacity: 1 }}
+                            transition={{ delay: 0.2 }}
+                            className="text-yellow-300 font-bold text-2xl mb-2 drop-shadow-md"
+                        >
+                            {HOT_AIRDROPS[current].title}
+                        </motion.h3>
+                        <motion.p
+                            initial={{ y: 20, opacity: 0 }}
+                            animate={{ y: 0, opacity: 1 }}
+                            transition={{ delay: 0.3 }}
+                            className="text-green-300 font-bold text-base mb-6 drop-shadow-md"
+                        >
+                            {HOT_AIRDROPS[current].subtitle}
+                        </motion.p>
+                        <motion.h1
+                            initial={{ scale: 0.8, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            transition={{ delay: 0.4, type: "spring" }}
+                            className="text-6xl font-black text-white tracking-widest drop-shadow-2xl stroke-black"
+                            style={{ WebkitTextStroke: "1px rgba(0,0,0,0.5)" }}
+                        >
                             {HOT_AIRDROPS[current].name}
-                        </h1>
+                        </motion.h1>
                     </motion.div>
                 </AnimatePresence>
             </div>
 
             {/* Info Section */}
-            <div className="mb-6">
-                <div className="flex items-center gap-3 mb-3">
-                    <div className="w-10 h-10 rounded-lg bg-blue-500/20 border border-blue-500/30 flex items-center justify-center">
-                        <Gem className="text-blue-400" size={20} />
-                    </div>
-                    <h4 className="font-bold text-lg">{HOT_AIRDROPS[current].platform}</h4>
-                </div>
-                <p className="text-gray-400 text-sm mb-6 line-clamp-2">
-                    {HOT_AIRDROPS[current].desc}
-                </p>
+            <div className="mb-8 px-4 text-center">
+                <AnimatePresence mode="wait">
+                    <motion.div
+                        key={current}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
+                        transition={{ duration: 0.3 }}
+                    >
+                        <h4 className="font-bold text-xl mb-2">{HOT_AIRDROPS[current].platform}</h4>
+                        <p className="text-gray-400 text-sm max-w-lg mx-auto line-clamp-2">
+                            {HOT_AIRDROPS[current].desc}
+                        </p>
+                    </motion.div>
+                </AnimatePresence>
             </div>
 
-            {/* Footer Controls & Button */}
-            <div className="flex items-center justify-between gap-4">
-                <Link href="#" className="flex-1 bg-[#3B82F6] hover:bg-blue-600 text-white font-bold py-3 rounded-lg text-center transition-colors">
+            {/* Buttons */}
+            <div className="flex items-center justify-center gap-4 px-4 max-w-lg mx-auto mb-8">
+                <Link href="#" className="flex-1 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white font-bold py-3.5 rounded-xl text-center transition-all shadow-lg hover:shadow-blue-500/25">
                     KUNJUNGI
                 </Link>
-                <Link href="#" className="flex-1 bg-transparent border border-white/20 hover:bg-white/5 text-white font-bold py-3 rounded-lg text-center transition-colors">
+                <Link href="#" className="flex-1 bg-white/5 border border-white/10 hover:bg-white/10 text-white font-bold py-3.5 rounded-xl text-center transition-all backdrop-blur-sm">
                     DETAIL
                 </Link>
             </div>
 
-            {/* Pagination & Arrows */}
-            <div className="flex items-center justify-center gap-4 mt-6">
-                <button onClick={prev} className="p-2 rounded-full border border-blue-500/30 hover:bg-blue-500/20 text-blue-400 transition-colors">
-                    <ChevronLeft size={20} />
-                </button>
-                <div className="flex gap-2">
-                    {HOT_AIRDROPS.map((_, i) => (
-                        <div
-                            key={i}
-                            className={`w-2 h-2 rounded-full transition-colors ${i === current ? 'bg-blue-500' : 'bg-gray-700'}`}
-                        />
-                    ))}
-                </div>
-                <button onClick={next} className="p-2 rounded-full border border-blue-500/30 hover:bg-blue-500/20 text-blue-400 transition-colors">
-                    <ChevronRight size={20} />
-                </button>
+            {/* Minimalist Pagination */}
+            <div className="flex justify-center gap-2 pb-2">
+                {HOT_AIRDROPS.map((_, i) => (
+                    <div
+                        key={i}
+                        className={`h-1.5 rounded-full transition-all duration-500 ${i === current ? 'w-8 bg-blue-500' : 'w-2 bg-gray-700'}`}
+                    />
+                ))}
             </div>
         </div>
     );
